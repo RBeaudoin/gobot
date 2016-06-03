@@ -7,10 +7,10 @@ A web crawler written in [Go](https://golang.org/)
 Step one is to build Gobot from the source by following these steps:
 
 1. Take a moment to walkthrough the [Getting Started](https://golang.org/doc/install) to install Go into your local development environment (Gobot was built/tested using Go v1.6)
-3. Unzip the source to your local [GOPATH](https://github.com/golang/go/wiki/GOPATH) by running the command `tar -xzvf gobot.tar.gz -C GOPATH`
-4. Navigate to the root source folder and run the command `go test ./...``
+3. Clone this repository locally to your [GOPATH](https://github.com/golang/go/wiki/GOPATH)
+4. Navigate to the root source folder and run the command `go test ./...` and then `go build`
 
-Once you have built and tested Gobot, it's ready to run.
+Once you have tested and built Gobot, it's ready to run.
 
 Gobot accepts a single commandline parameter: the domain you'd like to crawl. The default value is 'digitalocean.com', but you can override this value by running:
 
@@ -50,7 +50,7 @@ Gobot was built to do the following:
 
 Gobot has some remove from improvement. The following are a collection of features that would improve Gobot:
 
-1. Add benchmarks to the tests to set SLAs and maintain perf with each feature
+1. Add benchmarks to the existing tests to maintain perf
 2. Add aditional tests for edge cases, and improve test coverage
 3. Add feature to honor 'robots.txt'
 4. Deal with throttling better; currently just log an error
