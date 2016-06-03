@@ -104,42 +104,33 @@ func Crawl(url url.URL) (sm SiteMap, err error) {
 }
 
 func crawl(url url.URL, ch chan<- SiteMap) {
-	log.Printf("Crawling URL: %s\n", url.String())
+	var sm SiteMap
 
-	b, err := fetch(url)
-	if err != nil {
-		log.Printf("Error fetching page for URL: %s, err: %s\n", url.String(), err)
-		ch <- SiteMap{}
-	}
-
-	ln, as := parse(b, url)
-
-	// create new sitemap and add indexed page
-	sm := SiteMap{URL: url.String()}
-	pg := Page{Path: url.Path, Links: ln, Assets: as}
-	sm.Pages = append(sm.Pages, pg)
-
-	// make sure not to visit the same link twice
-	lc.mux.RLock()
+	// make sure this link hasn't been crawled
+	lc.mux.Lock()
 	_, ok := lc.links[url.RequestURI()]
-	lc.mux.RUnlock()
 
 	if !ok {
-		lc.mux.Lock()
 		lc.links[url.RequestURI()] = struct{}{}
 		lc.mux.Unlock()
-	}
+		log.Printf("Crawling URL: %s\n", url.String())
 
-	c := make(chan SiteMap)
-	chLnks := 0
-	for _, v := range ln {
-		lc.mux.RLock()
-		_, ok := lc.links[v]
-		lc.mux.RUnlock()
-		if !ok {
-			lc.mux.Lock()
-			lc.links[v] = struct{}{}
-			lc.mux.Unlock()
+		b, err := fetch(url)
+		if err != nil {
+			log.Printf("Error fetching page for URL: %s, err: %s\n", url.String(), err)
+			ch <- SiteMap{}
+		}
+
+		ln, as := parse(b, url)
+
+		// create new sitemap and add indexed page
+		sm = SiteMap{URL: url.String()}
+		pg := Page{Path: url.Path, Links: ln, Assets: as}
+		sm.Pages = append(sm.Pages, pg)
+
+		c := make(chan SiteMap)
+		chLnks := 0
+		for _, v := range ln {
 			chURL, err := url.Parse(v)
 			if err != nil {
 				log.Printf("Unable parse url for child link %s, error: ", v, err)
@@ -148,14 +139,17 @@ func crawl(url url.URL, ch chan<- SiteMap) {
 			go crawl(*chURL, c)
 			chLnks++
 		}
-	}
-	// results of child link crawls
-	for i := 0; i < chLnks; i++ {
-		chsm := <-c
-		if len(chsm.Pages) > 0 {
-			sm.Pages = append(sm.Pages, chsm.Pages...)
+		// results of child link crawls
+		for i := 0; i < chLnks; i++ {
+			chsm := <-c
+			if len(chsm.Pages) > 0 {
+				sm.Pages = append(sm.Pages, chsm.Pages...)
+			}
 		}
+	} else {
+		lc.mux.Unlock()
 	}
+	// send a SiteMap, even if empty
 	ch <- sm
 }
 
