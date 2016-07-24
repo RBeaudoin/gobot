@@ -2,31 +2,13 @@
 
 A web crawler written in [Go](https://golang.org/)
 
-## Running
+## Building and Running
 
-Step one is to build Gobot from the source by following these steps:
+Build gobot by running the `go build` command. Once built you can run:
 
-1. Take a moment to walkthrough the [Getting Started](https://golang.org/doc/install) to install Go into your local development environment (Gobot was built/tested using Go v1.6)
-3. Clone this repository locally to your [GOPATH](https://github.com/golang/go/wiki/GOPATH)
-4. Navigate to the root source folder and run the command `go test ./...` and then `go build`
+`gobot crawl -domain foo.com`
 
-Once you have tested and built Gobot, it's ready to run.
-
-Gobot accepts a single commandline parameter: the domain you'd like to crawl. The default value is 'digitalocean.com', but you can override this value by running:
-
-`./gobot -domain <insert_your_domain_here>`
-
-Gobot sends all of it's output to stdout, which can then be redirected to a file:
-
-`./gobot -domain <insert_your_domain_here> > <output_file_name>`
-
-Gobot logs info messages to stderr. You can redirect this output by running the following command:
-
-`/gobot -domain <insert_your_domain_here> 2> <log_file_name>`
-
-Finally, to send both log output and results to the same file, runt this command:
-
-`/gobot -domain <insert_your_domain_here> 2> <log_file_name>`
+to crawl the foo.com domain. The results are sent to stdout.
 
 ## Testing
 
