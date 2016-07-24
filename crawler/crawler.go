@@ -86,7 +86,6 @@ var (
 // and returns a collection of Page structs containing links
 // and static assets for each page that was crawled
 func Crawl(url url.URL) (sm SiteMap, err error) {
-
 	if url.Host == "" {
 		return sm, errors.New("crawler: host missing from URL")
 	} else if url.Path == "" {

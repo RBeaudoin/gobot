@@ -1,27 +1,51 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/url"
+	"os"
 
 	"github.com/rbeaudoin/gobot/crawler"
+	"github.com/urfave/cli"
 )
 
 func main() {
-	domain := flag.String("domain", "digitalocean.com", "The domain to crawl, defaults to 'digitalocean.com'")
-	flag.Parse()
+	app := getApp()
+	app.Run(os.Args)
+}
 
-	// Start the crawl by visting '/' for the supplied domain
-	url, err := url.Parse(fmt.Sprintf("http://%s/", *domain))
-	if err != nil {
-		log.Fatal(err)
-	}
+func getApp() *cli.App {
+	app := cli.NewApp()
+	app.Name = "gobot"
+	app.Usage = "a web crawler written in Go"
+	app.Version = "0.0.1"
 
-	sm, err := crawler.Crawl(*url)
-	if err != nil {
-		log.Fatal(err)
+	app.Commands = []cli.Command{
+		{
+			Name:    "crawl",
+			Aliases: []string{"c"},
+			Usage:   "crawl a domain",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "domain, d",
+					Usage: "`DOMAIN` to crawl",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				dmn := c.String("domain")
+				url, err := url.Parse(fmt.Sprintf("http://%s/", dmn))
+				if err != nil {
+					log.Fatal(err)
+				}
+				sm, err := crawler.Crawl(*url)
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Printf("%s\n", sm)
+				return nil
+			},
+		},
 	}
-	fmt.Printf("%s\n", sm)
+	return app
 }
