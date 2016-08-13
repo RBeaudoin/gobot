@@ -132,7 +132,7 @@ func crawl(url url.URL, ch chan<- SiteMap) {
 		for _, v := range ln {
 			chURL, err := url.Parse(v)
 			if err != nil {
-				log.Printf("Unable parse url for child link %s, error: ", v, err)
+				log.Printf("Unable parse url for child link %s, error: %s", v, err)
 				continue
 			}
 			go crawl(*chURL, c)

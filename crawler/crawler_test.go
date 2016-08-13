@@ -119,7 +119,7 @@ func TestAttrs(t *testing.T) {
 		if v, ok := attrs[tg]; !ok {
 			t.Fatalf("The %s tag is missing an entry in the attribute map", tg)
 		} else if v != at {
-			t.Fatal("The %s tag has value %s when value %s is expected in the attribute map", tg, v, at)
+			t.Fatalf("The %s tag has value %s when value %s is expected in the attribute map", tg, v, at)
 		}
 	}
 
